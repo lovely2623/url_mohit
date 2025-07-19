@@ -4,7 +4,7 @@ import path from "path";
 import crypto from"crypto";
 // import { writeFile } from "fs";
 import { existsSync, mkdirSync } from "fs";
-const PORT = 3001;
+// const PORT = 3001;
 
 const DATA_FILE = path.join("data", "links.json");
 
@@ -114,8 +114,12 @@ if(req.method==="POST" && req.url==="/shorten"){
 
 
 
-
-
-server.listen(PORT,()=>{
-    console.log("server running 3001 local host ://")
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
+
+
+// server.listen(PORT,()=>{
+//     console.log("server running 3001 local host ://")
+// });
