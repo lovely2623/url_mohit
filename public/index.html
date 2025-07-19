@@ -1,0 +1,102 @@
+<html>
+<head>
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+</head>
+<body>
+    <div class="container">
+        <h1>URL Shortner</h1>
+        <form id="shorten-form">
+            <div>
+                <label for="url">Enter URL:</label>
+                <input type="url" id="url" name="url" required="">
+            </div>
+            <div>
+                <label for="shortcode">Enter shortcode:</label>
+                <input type="text" id="shortcode" name="shortcode" required="">
+            </div>
+            <button type="submit"> Shorten</button>
+        </form>
+
+        <h2>Shortened Urls</h2>
+        <ul id="shortenedurls"></ul>
+
+    </div>
+
+    <script>
+
+const fetchshortcode =async()=>{
+    const response= await fetch ("/links");
+    const links = await response.json();
+    console.log("links " ,links);
+
+const list = document.getElementById("shortenedurls");
+list.innerHTML ="";
+
+
+for (const[shortcode,url]of Object.entries(links)){
+    const li = document.createElement('li');
+    li.innerHTML=`<a href ="/${shortcode}" target="_blank">
+        ${window.location.origin}/${shortcode}</a> -${url}`
+        list.appendChild(li);
+}
+
+}
+
+
+
+ document.getElementById("shorten-form").addEventListener("submit",async (event)=>{
+       event.preventDefault();
+
+       const formdata =new FormData(event.target);
+       const url = formdata.get('url');
+       const shortcode = formdata.get('shortcode');
+       console.log(url, shortcode);
+ 
+ 
+
+       try{
+        const response = await fetch("/shorten", {
+            method:"POST",
+            headers:{"Content-Type": "application/json"},
+            body :JSON.stringify({url,shortcode})
+        });
+ 
+        if(response.ok){
+             const result = await response.json(); // ← Yeh naya JSON milega
+    const list = document.getElementById("shortenedurls");
+    list.innerHTML = ""; // purana sab clear
+     const li = document.createElement("li");
+    li.innerHTML = `<a href="/${result.shortcode}" target="_blank">
+        ${window.location.origin}/${result.shortcode}</a> - ${url}`;
+    list.appendChild(li);
+            // fetchshortcode();
+            alert("form submitted successfully");
+            event.target.reset();
+        }else{
+            const errormessage= await response.text();
+            alert(errormessage)
+        }
+
+
+
+       }catch(error){
+console.log(error);
+       }
+ 
+ 
+ 
+ 
+ 
+    });
+
+
+
+
+    fetchshortcode();
+
+        </script>
+</body>
+</html>
